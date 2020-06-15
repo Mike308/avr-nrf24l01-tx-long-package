@@ -15,11 +15,8 @@
 #include "nrf24l01/nrf24l01.h"
 #include "nrf24l01/nrf24l01_memory_map.h"
 
-unsigned long previus_millis = 0;
 uint8_t status = 0xFF;
 uint8_t init_status;
-uint64_t addr =  0xF0F0F0F0F101;
-uint8_t cnt = 0;
 char print_buff[32];
 void error_handler(char *str);
 
@@ -29,12 +26,12 @@ int main(void) {
 	timeout_init();
 	init_status = nrf24l01_init();
 	nrf24l01_init_external_interrupt();
-	nrf24l01_open_wrting_pipe(addr);
+	nrf24l01_open_wrting_pipe(0xF0F0F0F0F101);
 	nrf24l01_open_reading_pipe(1, 0xF0F0F0F0E101);
 	nrf24l01_set_pa_level(RF24_PA_MAX);
 	uart_init(UBRR_VAL);
 	sei();
-	uart_putsn("SPI TEST");
+	uart_putsn("");
 	uart_puts("Init result: ");
 	uart_putint(init_status, 16);
 	uart_putsn("");
@@ -52,13 +49,12 @@ int main(void) {
 	nrf24l01_set_start_char('#');
 	nrf24l01_set_end_char('$');
 	nrf24l01_set_separator('-');
+
 	nrf24l01_set_on_error_callback(error_handler);
 
 	while (1) {
 		nrf24l01_write_long_package("This message is too long to send via NRF24L01 and so far working fine and so far working fine and so far working fine");
 		PORTD ^= (1<<7);
-		_delay_ms(1000);
-
 	}
 
 }
